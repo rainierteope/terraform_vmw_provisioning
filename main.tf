@@ -53,19 +53,19 @@ resource "vsphere_virtual_machine" "vm" {
   memory   = local.sizes[var.size].memory
 
   # Instance hardware specs from template
-  firmware = data.vsphere_virtual_machine.template.firmware
-  guest_id = data.vsphere_virtual_machine.template.guest_id
-  cpu_hot_add_enabled = data.vsphere_virtual_machine.template.cpu_hot_add_enabled
-  memory_hot_add_enabled = data.vsphere_virtual_machine.template.memory_hot_add_enabled
-  hardware_version = data.vsphere_virtual_machine.template.hardware_version
+  firmware                = data.vsphere_virtual_machine.template.firmware
+  guest_id                = data.vsphere_virtual_machine.template.guest_id
+  cpu_hot_add_enabled     = data.vsphere_virtual_machine.template.cpu_hot_add_enabled
+  memory_hot_add_enabled  = data.vsphere_virtual_machine.template.memory_hot_add_enabled
+  hardware_version        = data.vsphere_virtual_machine.template.hardware_version
   efi_secure_boot_enabled = data.vsphere_virtual_machine.template.efi_secure_boot_enabled
-  
+
   # Waiter configuration
-  wait_for_guest_net_timeout  = 5
+  wait_for_guest_net_timeout = 5
 
   # Virtual disk configuration
   dynamic "disk" {
-    for_each = toset([ for i in range(length(var.disks)) : i ])
+    for_each = toset([for i in range(length(var.disks)) : i])
     content {
       label       = "disk${disk.key}"
       size        = var.disks[disk.key]
@@ -75,11 +75,11 @@ resource "vsphere_virtual_machine" "vm" {
 
   # Virtual network adapters configuration
   dynamic "network_interface" {
-    for_each = toset([ for i in range(length(var.networks)) : i ])
+    for_each = toset([for i in range(length(var.networks)) : i])
     content {
       network_id = data.vsphere_network.networks[network_interface.key].id
     }
-  } 
+  }
 
   # Cloning options
   clone {
@@ -101,10 +101,10 @@ resource "vsphere_virtual_machine" "vm" {
       }
 
       dynamic "network_interface" {
-        for_each = toset([ for i in range(length(var.networks)) : i ])
+        for_each = toset([for i in range(length(var.networks)) : i])
         content {
-          ipv4_address = split("/", [ for network in split(",", split(":", var.networks[network_interface.key])[1]) : trimspace(network)][count.index])[0]
-          ipv4_netmask = split("/", [ for network in split(",", split(":", var.networks[network_interface.key])[1]) : trimspace(network)][count.index])[1]
+          ipv4_address = split("/", [for network in split(",", split(":", var.networks[network_interface.key])[1]) : trimspace(network)][count.index])[0]
+          ipv4_netmask = split("/", [for network in split(",", split(":", var.networks[network_interface.key])[1]) : trimspace(network)][count.index])[1]
         }
       }
       ipv4_gateway    = var.ipv4_gateway

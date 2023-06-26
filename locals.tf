@@ -13,5 +13,5 @@ locals {
       memory = 16384
     }
   }
-  
+
 }
